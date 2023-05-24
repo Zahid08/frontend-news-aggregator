@@ -102,6 +102,13 @@ const Header = () => {
                         Profile Page
                       </button>
                       <button
+                          onClick={() => navigate("/news-feed")}
+                          type="button"
+                          className="hover:bg-dark-hard hover:text-white px-4 py-2 text-white lg:text-dark-soft"
+                      >
+                        News Feed
+                      </button>
+                      <button
                         onClick={logoutHandler}
                         type="button"
                         className="hover:bg-dark-hard hover:text-white px-4 py-2 text-white lg:text-dark-soft"

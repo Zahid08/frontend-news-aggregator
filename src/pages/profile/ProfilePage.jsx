@@ -69,6 +69,8 @@ const ProfilePage = () => {
     mode: "onChange",
   });
 
+  console.log(profileData);
+
   const submitHandler = (data) => {
     const { name, email, password } = data;
     mutate({ name, email, password });
@@ -78,7 +80,6 @@ const ProfilePage = () => {
     <MainLayout>
       <section className="container mx-auto px-5 py-10">
         <div className="w-full max-w-sm mx-auto">
-          <ProfilePicture avatar={profileData?.avatar} />
           <form onSubmit={handleSubmit(submitHandler)}>
             <div className="flex flex-col mb-6 w-full">
               <label

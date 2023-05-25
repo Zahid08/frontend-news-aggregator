@@ -5,8 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import MainLayout from "../../components/MainLayout";
-import { getSource, updateProfile,getAuthor } from "../../services/index/users";
-import ProfilePicture from "../../components/ProfilePicture";
+import {getSource, updateNewsFeed} from "../../services/index/users";
 import { userActions } from "../../store/reducers/userReducers";
 import { toast } from "react-hot-toast";
 
@@ -17,13 +16,9 @@ const NewsFeed = () => {
   const queryClient = useQueryClient();
   const userState = useSelector((state) => state.user);
   const [dataSourceCheckboxItem, setDataSourceCheckboxItem] = useState([]);
-  const [dataAuthorCheckboxItem, setdataAuthorCheckboxItem] = useState([]);
-  const [dataCategoryCheckboxItem, setDataCategoryCheckboxItem] = useState([]);
 
   const {
     data: dataSource,
-    isLoading: profileIsLoading,
-    error: profileError,
   } = useQuery({
     queryFn: () => {
       return getSource({ token: userState.userInfo.token });
@@ -31,11 +26,11 @@ const NewsFeed = () => {
     queryKey: ["news-feed"],
   });
 
-  const { mutate, isLoading: updateProfileIsLoading } = useMutation({
-    mutationFn: ({ name, email, password }) => {
-      return updateProfile({
+  const { mutate, isLoading: updateLoading } = useMutation({
+    mutationFn: ({ dataSourceCheckboxItem }) => {
+      return updateNewsFeed({
         token: userState.userInfo.token,
-        userData: { name, email, password },
+        userData: { dataSourceCheckboxItem},
       });
     },
     onSuccess: (data) => {
@@ -54,6 +49,7 @@ const NewsFeed = () => {
     if (!userState.userInfo) {
       navigate("/");
     }
+    setDataSourceCheckboxItem(userState.userInfo.interested);
   }, [navigate, userState.userInfo]);
 
   const {
@@ -66,8 +62,8 @@ const NewsFeed = () => {
 
 
   const submitHandler = (data) => {
-        console.log(dataSourceCheckboxItem);
-        console.log(dataAuthorCheckboxItem);
+    const { name, email, password } = data;
+    mutate({ dataSourceCheckboxItem});
   };
 
   const handelDataSourceCheckbox = (item) => {
@@ -81,27 +77,6 @@ const NewsFeed = () => {
     }
   };
 
-  const handelDataAuthorCheckbox = (item) => {
-    const isChecked = dataAuthorCheckboxItem.includes(item);
-    if (isChecked) {
-      // Item is already checked, remove it from the checkedItems array
-      setdataAuthorCheckboxItem(dataAuthorCheckboxItem.filter((checkedItem) => checkedItem !== item));
-    } else {
-      // Item is not checked, add it to the checkedItems array
-      setdataAuthorCheckboxItem([...dataAuthorCheckboxItem, item]);
-    }
-  };
-
-  const handelDataCategoryCheckbox = (item) => {
-    const isChecked = dataCategoryCheckboxItem.includes(item);
-    if (isChecked) {
-      // Item is already checked, remove it from the checkedItems array
-      setDataCategoryCheckboxItem(dataCategoryCheckboxItem.filter((checkedItem) => checkedItem !== item));
-    } else {
-      // Item is not checked, add it to the checkedItems array
-      setDataCategoryCheckboxItem([...dataCategoryCheckboxItem, item]);
-    }
-  };
 
 
 
@@ -139,8 +114,8 @@ const NewsFeed = () => {
                           type="checkbox"
                           id={`checkbox-${item}`}
                           className="text"
-                          checked={dataAuthorCheckboxItem.includes(item)}
-                          onChange={() => handelDataAuthorCheckbox(item)}
+                          checked={dataSourceCheckboxItem.includes(item)}
+                          onChange={() => handelDataSourceCheckbox(item)}
                       />
                       <label
                           htmlFor={`checkbox-${item}`}
@@ -160,8 +135,8 @@ const NewsFeed = () => {
                           type="checkbox"
                           id={`checkbox-${item}`}
                           className="text"
-                          checked={dataCategoryCheckboxItem.includes(item)}
-                          onChange={() => handelDataCategoryCheckbox(item)}
+                          checked={dataSourceCheckboxItem.includes(item)}
+                          onChange={() => handelDataSourceCheckbox(item)}
                       />
                       <label
                           htmlFor={`checkbox-${item}`}
@@ -176,7 +151,7 @@ const NewsFeed = () => {
 
               <button
                   type="submit"
-                  disabled={!isValid  || updateProfileIsLoading}
+                  disabled={!isValid  || updateLoading}
                   className="bg-primary text-white font-bold text-lg py-4 px-8 w-full rounded-lg mb-6 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 Update

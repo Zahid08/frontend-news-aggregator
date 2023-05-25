@@ -7,10 +7,12 @@ import { getAllPosts } from "../../../services/index/posts";
 import { toast } from "react-hot-toast";
 import ArticleCardSkeleton from "../../../components/ArticleCardSkeleton";
 import ErrorMessage from "../../../components/ErrorMessage";
+import {useSelector} from "react-redux";
 
 const Articles = () => {
+    const userState = useSelector((state) => state.user);
   const { data, isLoading, isError } = useQuery({
-    queryFn: () => getAllPosts(),
+    queryFn: () => getAllPosts({ token: userState.userInfo?userState.userInfo.token:'' }),
     queryKey: ["posts"],
     onError: (error) => {
       toast.error(error.message);
@@ -31,7 +33,7 @@ const Articles = () => {
         ) : isError ? (
           <ErrorMessage message="Couldn't fetch the posts data" />
         ) : (
-          data.map((post) => (
+            data && data.map((post) => (
             <ArticleCard
               key={post.id}
               post={post}

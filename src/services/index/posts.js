@@ -1,9 +1,19 @@
 import axios from "axios";
 
-export const getAllPosts = async () => {
+export const getAllPosts = async ({ token }) => {
   try {
-    const { data } = await axios.get("/api/articles");
-    return data.data;
+    if (token!='') {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const { data } = await axios.get("/api/personalizedArticle", config);
+      return data.data;
+    }else{
+      const {data} = await axios.get("/api/articles");
+      return data.data;
+    }
   } catch (error) {
     if (error.response && error.response.data.message)
       throw new Error(error.response.data.message);

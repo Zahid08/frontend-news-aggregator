@@ -111,7 +111,7 @@ export const getSource = async ({ token }) => {
   }
 };
 
-export const getCategory = async ({ token }) => {
+export const updateNewsFeed = async ({ token, userData }) => {
   try {
     const config = {
       headers: {
@@ -119,24 +119,11 @@ export const getCategory = async ({ token }) => {
       },
     };
 
-    const { data } = await axios.get("/api/getCategory", config);
-    return data;
-  } catch (error) {
-    if (error.response && error.response.data.message)
-      throw new Error(error.response.data.message);
-    throw new Error(error.message);
-  }
-};
-
-export const getAuthor = async ({ token }) => {
-  try {
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
-
-    const { data } = await axios.get("/api/getAuthor", config);
+    const { data } = await axios.put(
+        "/api/updateInterested",
+        userData,
+        config
+    );
     return data;
   } catch (error) {
     if (error.response && error.response.data.message)
